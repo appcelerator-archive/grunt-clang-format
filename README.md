@@ -1,6 +1,6 @@
 # grunt-clang-format
 
-> Format your objective-c code using the clang-format tool
+> Format your Objective-C code using the clang-format tool
 
 ## Getting Started
 This plugin requires Grunt `~0.4.5`
@@ -29,7 +29,7 @@ grunt.initConfig({
 });
 ```
 
-Since clang-format is required to be installed, installing via Homebrew is an easy step" `brew install clang-format`.
+Since clang-format is required to be installed, installing via Homebrew is suggested: `brew install clang-format`.
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
