@@ -1,7 +1,7 @@
 {
   "name": "grunt-clang-format",
   "description": "Format your objective-c code using the clang-format tool",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "homepage": "https://github.com/ingo/grunt-clang-format",
   "author": {
     "name": "Ingo Muschenetz",
