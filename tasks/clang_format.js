@@ -40,7 +40,7 @@ module.exports = function (grunt) {
 				}
 			}).map(function (filepath) {
 
-				var cmd = format('clang-format -i %s', filepath);
+				var cmd = format('./bin/clang-format -i %s', filepath);
 
 				grunt.log.debug(cmd);
 				exec(cmd, function (err, stdout, stderr) {
