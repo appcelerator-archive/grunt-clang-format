@@ -9,7 +9,8 @@
 'use strict';
 
 var exec = require('child_process').exec,
-    format = require('util').format;
+    format = require('util').format,
+    packpath = require('packpath');
 
 module.exports = function (grunt) {
 
@@ -31,6 +32,7 @@ module.exports = function (grunt) {
 
 			// Concat specified files.
 			var src = f.src.filter(function (filepath) {
+
 				// Warn on and remove invalid source files (if nonull was set).
 				if (!grunt.file.exists(filepath)) {
 					grunt.log.warn('Source file "' + filepath + '" not found.');
@@ -38,20 +40,24 @@ module.exports = function (grunt) {
 				} else {
 					return true;
 				}
-			}).map(function (filepath) {
 
-				var cmd = format('../bin/clang-format -i %s', filepath);
+			}).map(function (filepath, i, arr) {
+
+				var cmd = format('%s/bin/clang-format -i %s', packpath.self(), filepath);
 
 				grunt.log.debug(cmd);
 				exec(cmd, function (err, stdout, stderr) {
 					if (err) { grunt.fail.fatal(err); }
 					// Print a success message.
 					grunt.log.ok('Formatted "' + filepath + '"');
+
+					if (i === arr.length + 1) {
+						done();
+					}
+
 				});
 
-			}).join(grunt.util.normalizelf(options.separator));
-
-			done();
+			});
 
 		});
 
