@@ -9,8 +9,10 @@
 'use strict';
 
 var exec = require('child_process').exec,
+    async = require('async'),
     format = require('util').format,
-    packpath = require('packpath');
+    packpath = require('packpath'),
+    EXEC_LIMIT = 10;
 
 module.exports = function (grunt) {
 
@@ -18,21 +20,18 @@ module.exports = function (grunt) {
 	// creation: http://gruntjs.com/creating-tasks
 
 	grunt.registerMultiTask('clangFormat', 'Format your objective-c code using the clang-format tool', function () {
-
-		var done = this.async();
-
-		// Merge task-specific and/or target-specific options with these defaults.
-		var options = this.options({
-			punctuation: '.',
-			separator: ', '
-		});
+		var done = this.async(),
+			// Merge task-specific and/or target-specific options with these defaults.
+			options = this.options({
+				punctuation: '.',
+				separator: ', '
+			}),
+			src = [];
 
 		// Iterate over all specified file groups.
 		this.files.forEach(function (f) {
-
 			// Concat specified files.
-			var src = f.src.filter(function (filepath) {
-
+			src = src.concat(f.src.filter(function (filepath) {
 				// Warn on and remove invalid source files (if nonull was set).
 				if (!grunt.file.exists(filepath)) {
 					grunt.log.warn('Source file "' + filepath + '" not found.');
@@ -40,27 +39,22 @@ module.exports = function (grunt) {
 				} else {
 					return true;
 				}
-
-			}).map(function (filepath, i, arr) {
-
-				var cmd = format('%s/bin/clang-format -i %s', packpath.self(), filepath);
-
-				grunt.log.debug(cmd);
-				exec(cmd, function (err, stdout, stderr) {
-					if (err) { grunt.fail.fatal(err); }
-					// Print a success message.
-					grunt.log.ok('Formatted "' + filepath + '"');
-
-					if (i === arr.length + 1) {
-						done();
-					}
-
-				});
-
-			});
-
+			}));
 		});
 
+		// Format the files in parallel, but limit number of simultaneous execs or we'll fail
+		async.mapLimit(src, EXEC_LIMIT, function (filepath, cb) {
+			var cmd = format('%s/bin/clang-format -i %s', packpath.self(), filepath);
+			grunt.log.debug(cmd);
+			exec(cmd, function (err, stdout, stderr) {
+				if (err) {
+					grunt.fail.fatal(err);
+					cb(err);
+				}
+				// Print a success message.
+				grunt.log.ok('Formatted "' + filepath + '"');
+				cb();
+			});
+		}, done);
 	});
-
 };
