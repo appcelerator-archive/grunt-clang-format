@@ -13,12 +13,17 @@
 	"nonew": true,
 	"undef": true,
 	"unused": false,
-	"trailing": true,
 	"loopfunc": true,
 	"proto": true,
 	"node": true,
 	"-W104": true,
 	"-W068": true,
-	"globals": {},
-	"node": true
+	"globals": {
+		"describe"   : false,
+		"it"         : false,
+		"before"     : false,
+		"beforeEach" : false,
+		"after"      : false,
+		"afterEach"  : false
+	}
 }

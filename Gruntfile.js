@@ -10,16 +10,15 @@
 
 module.exports = function (grunt) {
 
+	var source = ['Gruntfile.js', 'tasks/*.js', '<%= nodeunit.tests %>'];
+
 	// Project configuration.
 	grunt.initConfig({
 		jshint: {
-			all: [
-				'Gruntfile.js',
-				'tasks/*.js',
-				'<%= nodeunit.tests %>'
-			],
+			all: source,
 			options: {
-				jshintrc: '.jshintrc'
+				jshintrc: '.jshintrc',
+				reporter: require('jshint-stylish')
 			}
 		},
 		jscs: {
@@ -27,11 +26,7 @@ module.exports = function (grunt) {
 				config: '.jscsrc',
 				reporter: 'inline'
 			},
-			src: [
-				'Gruntfile.js',
-				'tasks/*.js',
-				'<%= nodeunit.tests %>'
-			]
+			src: source
 		},
 
 		// Before generating any new files, remove any previously-created files.

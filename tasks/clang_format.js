@@ -9,10 +9,10 @@
 'use strict';
 
 var exec = require('child_process').exec,
-    async = require('async'),
-    format = require('util').format,
-    packpath = require('packpath'),
-    EXEC_LIMIT = 10;
+	async = require('async'),
+	format = require('util').format,
+	packpath = require('packpath'),
+	EXEC_LIMIT = 10;
 
 module.exports = function (grunt) {
 
