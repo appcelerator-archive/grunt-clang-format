@@ -23,10 +23,10 @@ var grunt = require('grunt');
 */
 
 exports.clangFormat = {
-  /**
-   * Set up tests
-   * @param {Function} done - done function
-   */
+	/**
+	 * Set up tests
+	 * @param {Function} done - done function
+	 */
 	setUp: function (done) {
 		// setup here if necessary
 		done();
