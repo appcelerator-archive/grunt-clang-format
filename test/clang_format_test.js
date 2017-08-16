@@ -1,7 +1,5 @@
 'use strict';
 
-var grunt = require('grunt');
-
 /*
 	======== A Handy Little Nodeunit Reference ========
 	https://github.com/caolan/nodeunit

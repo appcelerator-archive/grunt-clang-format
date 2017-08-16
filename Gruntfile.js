@@ -10,71 +10,21 @@
 
 module.exports = function (grunt) {
 
-	var source = ['Gruntfile.js', 'tasks/*.js', '<%= nodeunit.tests %>'];
+	var source = [ 'Gruntfile.js', 'tasks/*.js', 'test/*_test.js' ];
 
 	// Project configuration.
 	grunt.initConfig({
-		jshint: {
-			all: source,
-			options: {
-				jshintrc: '.jshintrc',
-				reporter: require('jshint-stylish')
-			}
-		},
-		jscs: {
-			options: {
-				config: '.jscsrc',
-				reporter: 'inline'
-			},
+		appcJs: {
 			src: source
-		},
-
-		// Before generating any new files, remove any previously-created files.
-		clean: {
-			tests: ['tmp']
-		},
-
-		// Configuration to be run (and then tested).
-		clangFormat: {
-			defaultOptions: {
-				options: {
-				},
-				files: {
-					'tmp/default_options': ['test/fixtures/testing', 'test/fixtures/123']
-				}
-			},
-			customOptions: {
-				options: {
-					separator: ': ',
-					punctuation: ' !!!'
-				},
-				files: {
-					'tmp/custom_options': ['test/fixtures/testing', 'test/fixtures/123']
-				}
-			}
-		},
-
-		// Unit tests.
-		nodeunit: {
-			tests: ['test/*_test.js']
 		}
-
 	});
 
 	// Actually load this plugin's task(s).
 	grunt.loadTasks('tasks');
 
 	// These plugins provide necessary tasks.
-	grunt.loadNpmTasks('grunt-contrib-jshint');
-	grunt.loadNpmTasks('grunt-jscs');
-	grunt.loadNpmTasks('grunt-contrib-clean');
-	grunt.loadNpmTasks('grunt-contrib-nodeunit');
-
-	// Whenever the "test" task is run, first clean the "tmp" dir, then run this
-	// plugin's task(s), then test the result.
-	grunt.registerTask('test', ['clean', 'clangFormat']);
-
+	grunt.loadNpmTasks('grunt-appc-js');
 	// By default, lint and run all tests.
-	grunt.registerTask('default', ['jshint', 'jscs', 'test']);
+	grunt.registerTask('default', [ 'appcJs' ]);
 
 };

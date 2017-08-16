@@ -8,10 +8,8 @@
 
 'use strict';
 
-var exec = require('child_process').exec,
-	async = require('async'),
-	format = require('util').format,
-	packpath = require('packpath'),
+const async = require('async'),
+	clangFormat = require('clang-format'),
 	EXEC_LIMIT = 10;
 
 module.exports = function (grunt) {
@@ -21,11 +19,6 @@ module.exports = function (grunt) {
 
 	grunt.registerMultiTask('clangFormat', 'Format your objective-c code using the clang-format tool', function () {
 		var done = this.async(),
-			// Merge task-specific and/or target-specific options with these defaults.
-			options = this.options({
-				punctuation: '.',
-				separator: ', '
-			}),
 			src = [];
 
 		// Iterate over all specified file groups.
@@ -44,17 +37,16 @@ module.exports = function (grunt) {
 
 		// Format the files in parallel, but limit number of simultaneous execs or we'll fail
 		async.mapLimit(src, EXEC_LIMIT, function (filepath, cb) {
-			var cmd = format('%s/bin/clang-format -i %s', packpath.self(), filepath);
-			grunt.log.debug(cmd);
-			exec(cmd, function (err, stdout, stderr) {
-				if (err) {
-					grunt.fail.fatal(err);
-					cb(err);
+			grunt.log.debug(filepath);
+			clangFormat.spawnClangFormat([ '-i', filepath ], function (exit) {
+				if (exit) {
+					grunt.fail.fatal('Failed to format "' + filepath + '"');
+					cb(exit);
 				}
 				// Print a success message.
 				grunt.log.ok('Formatted "' + filepath + '"');
 				cb();
-			});
+			}, [ 'ignore', 'pipe', process.stderr ]);
 		}, done);
 	});
 };
