@@ -10,6 +10,7 @@
 
 const async = require('async'),
 	clangFormat = require('clang-format'),
+	fork = require('child_process').fork, // eslint-disable-line security/detect-child-process
 	EXEC_LIMIT = 10;
 
 module.exports = function (grunt) {
@@ -36,17 +37,26 @@ module.exports = function (grunt) {
 		});
 
 		// Format the files in parallel, but limit number of simultaneous execs or we'll fail
-		async.mapLimit(src, EXEC_LIMIT, function (filepath, cb) {
-			grunt.log.debug(filepath);
-			clangFormat.spawnClangFormat([ '-i', filepath ], function (exit) {
+		async.eachLimit(src, EXEC_LIMIT, function (filepath, cb) {
+			let stdout = '';
+			let stderr = '';
+			const proc = fork(clangFormat.location, [ '-style=file', '-i', filepath ], { silent: true, cwd: process.cwd() });
+			proc.stdout.on('data', function (data) {
+				stdout += data.toString();
+			});
+			proc.stderr.on('data', function (data) {
+				stderr += data.toString();
+			});
+			proc.on('close', function (exit) {
 				if (exit) {
-					grunt.fail.fatal('Failed to format "' + filepath + '"');
-					cb(exit);
+					const msg = `Failed to check formatting of ${filepath}. Exit code: ${exit}, stdout: ${stdout}, stderr: ${stderr}`;
+					return cb(new Error(msg));
 				}
+
 				// Print a success message.
 				grunt.log.ok('Formatted "' + filepath + '"');
 				cb();
-			}, [ 'ignore', 'pipe', process.stderr ]);
+			});
 		}, done);
 	});
 };
